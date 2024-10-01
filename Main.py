@@ -180,7 +180,7 @@ class MainGUI:
         print(self.scal_entry.get())
         
         print("Shift-it-GUI activated")
-        shift_x, shift_y = Shift_it(master = self.root, ref_RGB = self.ref_RGB, image_RGB = self.image_RGB, scaling_factor = self.SF_entry.get())
+        shift_x, shift_y = Shift_it(master = self.root, ref_RGB = self.ref_RGB, image_RGB = self.image_RGB, scaling_factor = self.scal_entry.get())
         print("Final image shift (x,y):", shift_x, shift_y)
         print("Shift-it-GUI closed")
         
