@@ -3,7 +3,9 @@ Autor: tonreg, team UMI, CNP-CHUV Lausanne
  
 Version 01 - 30.09.2024
 
-Program suite to rescale and align microscopy images. A source image is transformed in reference to another image. For example a DHM image and a epifluorescence image.
+Program suite to rescale and align microscopy images.
+- A source image is transformed in reference to another image. For example a DHM image and a epifluorescence image.
+- An image stack can be registered with a scaling factor and a constant x-y shift
 
 How to use the program suite:
 
@@ -13,13 +15,18 @@ Possible image formats: .png, .jpg, .jpeg, .bmp, .tif, .tiff, as well as the Lyn
 
 We are assume the same scaling factor for image width and height.
 
-Get_scaling_factor.py
+Get_scaling_factor.py :
 - Program to find the scaling factor (alternative ways to find the scaling factor: take the ratio of the pixel sizes, find the scaling factor manually using imageJ fro example)
 - Shows the images in real size, i.e., if the image is 800x800 pixels, it will take 800x800 pixels of the screen to show it. Therfore, you need to crop bigger images before loading them (mind to keep the most interesting ROI).
 - Find landmarks, which are clearly indentifiable in reference and source image. Double click every landmark in both, reference and source image. The order of clicking is important!
 - Try to find landmarks as far from each other as possible and as many as possible.
 - At least 2 landmarks per image are needed. 
 
-Shift-it.py
+Shift-it.py :
 - Program to find the x and y pixel shift (rigid translation)
 - Gives out "image_shifted_final.png" and "image_shifted_overlay.png"
+
+Load and register a whole stack (Button "Load stack and process"):
+- Load a tiff stack, a "LynceeTec bnr file" (a stack of frames of a DHM recording), or select a "LynceeTec bin file" (every file is a single frame of a DHM recording)
+- tiff / bnr : creates a new file with suffix "_registered.bnr" / "_registered.tif"
+- bin : sves the modified bin files in a new folder "registered"
