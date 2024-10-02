@@ -8,12 +8,14 @@ from Shift_it import Shift_it
 
 from image_import import path_to_display, path_to_TkPhotoImage, path_to_RGB
 
+from stack_registration import stack_registration
+
 
 class MainGUI:
     def __init__(self, root):
         self.root = root
         root.title("DHM-FLUO registration")
-        root.geometry("930x640")
+        root.geometry("805x645")
         
         self.left_frame = tk.LabelFrame(root)
         
@@ -22,7 +24,7 @@ class MainGUI:
         self.button1 = tk.Button(self.Load_ref_frame, text="Browse", command=self.load_ref)
         self.button1.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
         
-        self.label_image1 = tk.Label(self.Load_ref_frame, text="Drag and Drop Reference Here", bg="lightgray", width=35, height=10)
+        self.label_image1 = tk.Label(self.Load_ref_frame, text="Drag and Drop Reference Here", bg="lightgray", width=25, height=10)
         self.label_image1.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
         self.label_image1.drop_target_register(DND_FILES)
         self.label_image1.dnd_bind('<<Drop>>', self.on_ref_drop)
@@ -33,7 +35,7 @@ class MainGUI:
         self.button2 = tk.Button(self.Load_image_frame, text="Browse", command=self.load_image)
         self.button2.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
         
-        self.label_image2 = tk.Label(self.Load_image_frame, text="Drag and Drop Image Here", bg="lightgray", width=35, height=10)
+        self.label_image2 = tk.Label(self.Load_image_frame, text="Drag and Drop Image Here", bg="lightgray", width=25, height=10)
         self.label_image2.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
         self.label_image2.drop_target_register(DND_FILES)
         self.label_image2.dnd_bind('<<Drop>>', self.on_image_drop)
@@ -54,48 +56,55 @@ class MainGUI:
         self.image_label.grid(row=1, column=1, padx=5, pady=5, sticky="n,w")
         
         # sub GUIs
-        self.aframe = tk.LabelFrame(root)
+        self.right_frame = tk.LabelFrame(root, text="Buttons and stuff")
         
-        self.scal_label = tk.Label(self.aframe, text= "I. Rescaling of the source image:\nEnter a manual factor or use the sub GUI")
-        self.scal_label2 = tk.Label(self.aframe, text= "Scaling factor:")
-        self.scal_entry = tk.Entry(self.aframe, width=6)
+        self.space_label0 = tk.Label(self.right_frame, text= "   ")
+        
+        self.scal_label = tk.Label(self.right_frame, text= "I. Get the scaling factor:\nEnter a factor or use the sub GUI")
+        self.scal_label2 = tk.Label(self.right_frame, text= "Scaling factor:")
+        self.scal_entry = tk.Entry(self.right_frame, width=6)
         self.scal_entry.insert(0,"1")
-        self.scal_button = tk.Button(self.aframe, text="Open Scaling GUI", command=self.start_scaling_GUI)
+        self.scal_button = tk.Button(self.right_frame, text="Open Scaling GUI", command=self.start_scaling_GUI)
         
-        self.space_label = tk.Label(self.aframe, text= "   ")
-        self.space_label2 = tk.Label(self.aframe, text= "   ")
-        self.space_label3 = tk.Label(self.aframe, text= "   ")
+        self.space_label = tk.Label(self.right_frame, text= "   ")
+        self.space_label2 = tk.Label(self.right_frame, text= "   ")
+        self.space_label3 = tk.Label(self.right_frame, text= "   ")
+        self.space_label4 = tk.Label(self.right_frame, text= "   ")
         
-        self.shift_button = tk.Button(self.aframe, text="Open Shifting GUI", command=self.start_shifting_GUI)
+        self.shift_button = tk.Button(self.right_frame, text="Open Shifting GUI", command=self.start_shifting_GUI)
         
-        self.shift_label = tk.Label(self.aframe, text= "II. To shift the source image, open the sub GUI")
-        self.shift_label2 = tk.Label(self.aframe, text= "Image shift (x,y):")
-        self.shift_entry = tk.Entry(self.aframe, width=9)
-        self.shift_entry.insert(0,"")
+        self.shift_label = tk.Label(self.right_frame, text= "II. Get the xy shift:\nEnter manually or use the sub GUI")
+        self.shift_label2 = tk.Label(self.right_frame, text= "Image shift (x,y):")
+        self.shift_entry = tk.Entry(self.right_frame, width=9)
+        self.shift_entry.insert(0,"0,0")
         
-        self.info_button = tk.Button(self.aframe, text="INFO", command=self.show_info)
+        self.stack_label = tk.Label(self.right_frame, text= "III. Rescale and align a whole stack")
+        self.stack_button = tk.Button(self.right_frame, text="Load stack and process", command=self.load_stack)
         
-        self.close_button = tk.Button(self.aframe, text="EXIT", command=self.close_GUI)
+        self.info_button = tk.Button(self.right_frame, text="INFO", command=self.show_info)
         
-        self.scal_label.grid(row=0, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_label2.grid(row=1, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_entry.grid(row=2, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_button.grid(row=3, column=0, padx=5, pady=5, sticky="n,w")
-        self.space_label.grid(row=4, column=0, padx=5, pady=5, sticky="n,w")
+        self.close_button = tk.Button(self.right_frame, text="EXIT", command=self.close_GUI)
         
-        self.shift_label.grid(row=5, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_button.grid(row=6, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_label2.grid(row=7, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_entry.grid(row=8, column=0, padx=0, pady=5, sticky="n,w")
-        self.space_label2.grid(row=9, column=0, padx=5, pady=5, sticky="n,w")
+        self.space_label0.grid(row=0, column=0, padx=5, pady=5, sticky="n,w")
+        self.scal_label.grid(row=1, column=0, padx=5, pady=5, sticky="n,w")
+        self.scal_label2.grid(row=2, column=0, padx=5, pady=5, sticky="n,w")
+        self.scal_entry.grid(row=3, column=0, padx=5, pady=5, sticky="n,w")
+        self.scal_button.grid(row=4, column=0, padx=5, pady=5, sticky="n,w")
+        self.space_label.grid(row=5, column=0, padx=5, pady=5, sticky="n,w")
         
-        self.info_button.grid(row=10, column=0, padx=5, pady=5, sticky="n,w")
+        self.shift_label.grid(row=6, column=0, padx=5, pady=5, sticky="n,w")
+        self.shift_button.grid(row=7, column=0, padx=5, pady=5, sticky="n,w")
+        self.shift_label2.grid(row=8, column=0, padx=5, pady=5, sticky="n,w")
+        self.shift_entry.grid(row=9, column=0, padx=0, pady=5, sticky="n,w")
+        self.space_label2.grid(row=10, column=0, padx=5, pady=5, sticky="n,w")
+        self.stack_label.grid(row=11, column=0, padx=5, pady=5, sticky="n,w")
+        self.stack_button.grid(row=12, column=0, padx=5, pady=5, sticky="n,w")
+        self.space_label3.grid(row=13, column=0, padx=5, pady=5, sticky="n,w")
+        self.info_button.grid(row=14, column=0, padx=5, pady=5, sticky="n,w")
+        self.space_label4.grid(row=15, column=0, padx=5, pady=5, sticky="n,w")
+        self.close_button.grid(row=16, column=0, padx=5, pady=5, sticky="nw")
         
-        self.space_label3.grid(row=11, column=0, padx=5, pady=5, sticky="n,w")
-        
-        self.close_button.grid(row=12, column=0, padx=5, pady=5, sticky="nw")
-        
-        self.aframe.grid(row=0, column=2, padx=5, pady=5, sticky="n,w")
+        self.right_frame.grid(row=0, column=2, padx=5, pady=5, sticky="n,w")
         
         # initialize some variables
         self.ref_tk = None
@@ -187,6 +196,24 @@ class MainGUI:
         shift_string = str(shift_x) + "   ,   " + str(shift_y)
         self.shift_entry.delete(0, tk.END)
         self.shift_entry.insert(0,shift_string)
+     
+    def load_stack(self):
+        print("Start stack registration on file:")
+        stack_path = filedialog.askopenfilename(filetypes=[("Select an appropriate file (see Infos)", "*.tif;*.tiff;*.bin;*.bnr")])
+        
+        if stack_path:
+            print(stack_path)
+            
+            factor = float(self.scal_entry.get())
+            shiftstring = self.shift_entry.get()
+            x_shift, y_shift = shiftstring.split(",")
+            x_shift = int(x_shift)
+            y_shift = int(y_shift)
+            
+            stack_registration(stack_path, factor, x_shift, y_shift)
+            print("Stack registration completed.")
+        else:
+            print("Stack registration cancelled (no file selected).")
         
     def show_info(self):
         with open('_read me.txt') as f:
