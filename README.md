@@ -16,7 +16,7 @@ Possible image formats: .png, .jpg, .jpeg, .bmp, .tif, .tiff, as well as the Lyn
 We are assume the same scaling factor for image width and height.
 
 Get_scaling_factor.py :
-- Program to find the scaling factor (alternative ways to find the scaling factor: take the ratio of the pixel sizes, find the scaling factor manually using imageJ fro example)
+- Program to find the scaling factor (alternative ways to find the scaling factor: take the ratio of the pixel sizes, find the scaling factor manually using imageJ for example)
 - Shows the images in real size, i.e., if the image is 800x800 pixels, it will take 800x800 pixels of the screen to show it. Therfore, you need to crop bigger images before loading them (mind to keep the most interesting ROI).
 - Find landmarks, which are clearly indentifiable in reference and source image. Double click every landmark in both, reference and source image. The order of clicking is important!
 - Try to find landmarks as far from each other as possible and as many as possible.
@@ -27,6 +27,8 @@ Shift-it.py :
 - Gives out "image_shifted_final.png" and "image_shifted_overlay.png"
 
 Load and register a whole stack (Button "Load stack and process"):
-- Load a tiff stack, a "LynceeTec bnr file" (a stack of frames of a DHM recording), or select a "LynceeTec bin file" (every file is a single frame of a DHM recording)
-- tiff / bnr : creates a new file with suffix "_registered.bnr" / "_registered.tif"
+- only for files "LynceeTec BIN" and "LynceeTec BNR".
+- for TIFF files one can use imageJ-Image-Scale... and imageJ-Image-Transform-Translate...
+- Load a "LynceeTec bnr file" (a stack of frames of a DHM recording) or select a "LynceeTec bin file" (every file is a single frame of a DHM recording)
+- bnr : creates a new file with suffix "_registered.bnr" / "_registered.tif"
 - bin : sves the modified bin files in a new folder "registered"
