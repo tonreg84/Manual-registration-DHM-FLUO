@@ -136,7 +136,7 @@ class MainGUI:
         self.ref_path = event.data.strip("{}")
         path_to_display(self.ref_path, self.ref_label)
         
-        self.ref_tk, ref_height, ref_width = path_to_TkPhotoImage(self.ref_path)
+        self.ref_tk, self.ref_height, self.ref_width = path_to_TkPhotoImage(self.ref_path)
     
     def on_image_drop(self, event):
         self.image_path = event.data.strip("{}")
