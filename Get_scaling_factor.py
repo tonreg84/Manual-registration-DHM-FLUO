@@ -3,7 +3,7 @@ import tkinter as tk
 from math import sqrt
 from tkinter import filedialog, messagebox
 
-from image_import import path_to_TkPhotoImage
+from Image_import import path_to_TkPhotoImage
 
 def get_even_or_lower_even(n):
     if n % 2 == 0:
@@ -30,6 +30,7 @@ class Get_scaling_factor:
             self.ref_tk, self.ref_height, self.ref_width = path_to_TkPhotoImage(filedialog.askopenfilename(title="Select a reference file"))
             
             self.img_tk, self.image_height, self.image_width = path_to_TkPhotoImage(filedialog.askopenfilename(title="Select an image file"))
+            
             
         else: self.ref_tk, self.img_tk, self.ref_height, self.ref_width, self.image_height, self.image_width = passed_data
         

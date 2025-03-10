@@ -4,10 +4,10 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 import cv2
 import numpy as np
-from image_import import path_to_RGB
+from Image_import import path_to_RGB
 from POPUP_rescale import POPUP_rescale
 
-def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1):
+def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1, pre_shift_x = 0, pre_shift_y = 0):
     
     global shift_x_accum, shift_y_accum, image_shifted, ref_int, image_int, reference
     
@@ -20,7 +20,6 @@ def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1):
     else:
         reference = ref_RGB
         image = image_RGB
-    
     
     # rescale source image?
     rescale_check, scaling_factor = POPUP_rescale(master, scaling_factor)
@@ -43,6 +42,9 @@ def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1):
     ref_height, ref_width = reference.shape[:2]
     image_height, image_width = image.shape[:2]
     
+    image_height = image_height + pre_shift_y
+    image_width = image_width + pre_shift_x
+    
     if ref_height > image_height:
         larger_image_height = ref_height
     else: larger_image_height = image_height
@@ -55,11 +57,8 @@ def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1):
     larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
     larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
     
-    start_y = 0
-    start_x = 0
-    
-    larger_ref[start_y:start_y+ref_height, start_x:start_x+ref_width] = reference
-    larger_image[start_y:start_y+image_height, start_x:start_x+image_width] = image
+    larger_ref[0:ref_height, 0:ref_width] = reference
+    larger_image[pre_shift_y:image_height, pre_shift_x:image_width] = image
     
     w = larger_image_width
     h = larger_image_height
