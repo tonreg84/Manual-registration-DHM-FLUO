@@ -1,16 +1,14 @@
 Manual registration DHM-FLUO
 Autor: tonreg, team UMI, CNP-CHUV Lausanne
- 
-Version 06 - 10.03.2025
 
 Program suite to rescale and align microscopy images.
-- A source image is transformed in reference to another image. For example a DHM image and a epifluorescence image.
-- An image stack can be registered with a scaling factor and a constant x-y shift
+- A source image is transformed in reference to another image to obtain a scaling factor and a x-y shift. For example a DHM image and a epifluorescence image.
+- An image sequence can be registered with a scaling factor and a constant x-y shift
 
 How to use the program suite:
 
 Main.py - main GUI:
-Use it to load the source and the reference images, to display them, and to call the sub GUIs "Rough.py", "Get_scaling_factor.py", and "Shift_it.py". You can run the sub GUIs directly from an IDE, too. Anyway, you need to load a reference image and a (rescaled) source image.
+To load the source and the reference images, display them, and call the sub GUIs "Rough.py", "Get_scaling_factor.py", and "Shift_it.py". You can run the sub GUIs directly, too.
 Possible image formats: .png, .jpg, .jpeg, .bmp, .tif, .tiff, as well as the LynceeTec formats .bin and .bnr
 
 We are assume the same scaling factor for image width and height.
@@ -35,10 +33,10 @@ Shift-it.py :
 - Program to find the x and y pixel shift (rigid translation)
 - Can save shifted images ("image_shifted_final.png", "image_shifted_overlay.png")
 
-Load and register a whole stack (Button "Load stack and process"):
-- For stacks of file-type "LynceeTec BIN" or tif/tiff (every file is a single frame of a DHM recording), or "LynceeTec BNR" (single-file stack)
+Load and register a whole image sequence (Button "Load stack and process"):
+- For file-types "LynceeTec BIN" or tif/tiff (every file is a single frame of a DHM recording), or "LynceeTec BNR" (single-file stack)
 - Select the first file of the stack
 - bin/if/tiff : saves the modified bin files in a new folder "registered"
 - bnr : creates a new file with suffix "_registered.bnr" / "_registered.tif"
 
-Alternative way to register your stack: imageJ-Image-Scale... then imageJ-Image-Transform-Translate...
+Alternative way to register your sequence: open your sequence with imageJ, use Image-Scale... then Image-Transform-Translate...
