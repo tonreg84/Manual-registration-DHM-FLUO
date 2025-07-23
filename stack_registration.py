@@ -5,7 +5,7 @@ import cv2
 from tifffile import imread, imsave
 import binkoala
 
-def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shift, y_shift):
+def Stack_registration(root, stack_path, ref_width, ref_height, scaling_factor, x_shift, y_shift):
     larger_image_width = ref_width # max(ref_width,sdasdsa)
     larger_image_height = ref_height # max(ref_height,asdasdasd)
         
@@ -27,8 +27,8 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
     
     file_name, file_extension = os.path.splitext(stack_path)
     
-    # registration for "LynceeTec bin files" (every file is a single frame of a DHM recording)
     if file_extension == ".bin":
+        # registration for "LynceeTec bin files" (every file is a single frame of a DHM recording)
         
         binfolder=os.path.dirname(stack_path)
         
@@ -84,69 +84,80 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
                 #save new bin-file #k
                 outfile=new_folder+'/'+file
                 binkoala.write_mat_bin(outfile, larger_image, larger_image_width, larger_image_height, new_pixel_size, hconv, unit_code=1)
-
-
-#TODO
     
-    tif_files = []
-    # registration for "tiff files" (every file is a single frame of a DHM recording)
-    if file_extension == ".tif":
-        tif_files = sorted([f for f in os.listdir(os.path.dirname(stack_path)) if f.endswith(('.tif'))])
-    elif file_extension == ".tiff":
-        tif_files = sorted([f for f in os.listdir(os.path.dirname(stack_path)) if f.endswith(('.tiff'))])
-    
-    if len(tif_files) != 0:
-        registered_folder=os.path.join(os.path.dirname(stack_path),"registered")
-        if not os.path.isdir(registered_folder):
-            os.mkdir(registered_folder)
-            
-        if len(os.listdir(registered_folder)) != 0:
-            answ = messagebox.askquestion('Output folder is not empty!', 'Output folder is not empty.\nDo you want to proceed?')
-        else: 
-            answ = "yes"
+    if file_extension == '.tif' or file_extension == '.tiff':
+        from tiffs_or_tiffS import tiffs_or_tiffS
         
-        if answ == "yes":
+        (go_on,tiff_type)=tiffs_or_tiffS(root)
+        
+        if go_on:
             
-            dummy_path = os.path.dirname(stack_path) + "/dummy.bin"
+            if tiff_type == 'singleframe':
+                
+                tif_folder = os.path.dirname(stack_path)
 
-            for file in tif_files:
+                tif_files = []
+                # registration for "tiff files" (every file is a single frame of a DHM recording)
+                if file_extension == ".tif":
+                    tif_files = sorted([f for f in os.listdir(tif_folder) if f.endswith(('.tif'))])
+                elif file_extension == ".tiff":
+                    tif_files = sorted([f for f in os.listdir(tif_folder) if f.endswith(('.tiff'))])
                 
-                file_path = os.path.join(os.path.dirname(stack_path),file) 
-                print("Processing:",file_path)
-                phase_map = imread(file_path, key=0)
+                    new_folder=os.path.join(tif_folder,"registered")
+                    
+                    if not os.path.isdir(new_folder):
+                        os.mkdir(new_folder)
+                        
+                    if len(os.listdir(new_folder)) != 0:
+                        answ = messagebox.askquestion('Output folder is not empty!', 'Output folder is not empty.\nDo you want to proceed?')
+                    else: 
+                        answ = "yes"
+                    
+                    if answ == "yes":
+                        
+                        dummy_path = os.path.dirname(stack_path) + "/dummy.bin"
+            
+                        for file in tif_files:
+                            
+                            file_path = os.path.join(tif_folder,file) 
+                            print("Processing:",file_path)
+                            phase_map = imread(file_path, key=0)
+                            
+                            height, width = phase_map.shape
                 
-                height, width = phase_map.shape
-    
-                # rescale image
-                new_height = round(height* scaling_factor)
-                new_width = round(width* scaling_factor)
-                new_phase_map = cv2.warpPerspective(phase_map, Hscale, (new_width, new_height))
+                            # rescale image
+                            new_height = round(height* scaling_factor)
+                            new_width = round(width* scaling_factor)
+                            new_phase_map = cv2.warpPerspective(phase_map, Hscale, (new_width, new_height))
+            
+                            # Create the larger image with the specified background value
+                            larger_image = np.full((larger_image_height,larger_image_width), 0.500, dtype=np.float32)
+                            
+                            # shift image
+                            # Determine the placement region in the larger image
+                            start_row = y_shift
+                            start_col = x_shift
+                            end_row = y_shift + new_height
+                            end_col = x_shift + new_width
+                                            
+                            # Place the smaller image in the larger one
+                            larger_image[start_row:end_row, start_col:end_col] = new_phase_map
+                            
+                            # save new file
+                            binkoala.write_mat_bin(dummy_path, larger_image, larger_image_width, larger_image_height, 1, 1.05997195e-07, unit_code=1)
+                            
+                            (new_phase_map,in_file_header)=binkoala.read_mat_bin(dummy_path)
+                            
+                            new_file = os.path.join(new_folder,file)
+                            imsave(new_file, new_phase_map, photometric='minisblack', compression=5, append=False, bitspersample=32, planarconfig=1, subfiletype=3)
+                        os.remove(dummy_path)
+            
+            if tiff_type == 'singleframe':
+                print("Registration for tiff-stack under construction...")
 
-                # Create the larger image with the specified background value
-                larger_image = np.full((larger_image_height,larger_image_width), 0.500, dtype=np.float32)
-                
-                # shift image
-                # Determine the placement region in the larger image
-                start_row = y_shift
-                start_col = x_shift
-                end_row = y_shift + new_height
-                end_col = x_shift + new_width
-                                
-                # Place the smaller image in the larger one
-                larger_image[start_row:end_row, start_col:end_col] = new_phase_map
-                
-                # save new file
-                binkoala.write_mat_bin(dummy_path, larger_image, larger_image_width, larger_image_height, 1, 1.05997195e-07, unit_code=1)
-                
-                (new_phase_map,in_file_header)=binkoala.read_mat_bin(dummy_path)
-                
-                new_file = os.path.join(registered_folder,file)
-                
-                imsave(new_file, new_phase_map, photometric='minisblack', compression=5, append=False, bitspersample=32, planarconfig=1, subfiletype=3)
-            os.remove(dummy_path)
-
-    # registration for a "LynceeTec bnr file" (a stack of frames of a DHM recording)             
+      
     if file_extension == ".bnr":
+        # registration for a "LynceeTec bnr file" (a stack of frames of a DHM recording)           
         
         new_file = file_name + "_registered.bnr"
         print(new_file)
@@ -201,6 +212,8 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
             
             #read the frames of the stack 
             for i in range(nImages):
+                
+                print(f"Processing frame {i} of {nImages}")
                 
                 # read frame #i:
                 for k in range(h):

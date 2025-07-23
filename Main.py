@@ -404,7 +404,7 @@ class MainGUI:
                 x_shift = int(self.shift_x_entry.get())
                 y_shift = int(self.shift_y_entry.get())
                                 
-                Stack_registration(stack_path, ref_w, ref_h, factor, x_shift, y_shift)
+                Stack_registration(self.root, stack_path, ref_w, ref_h, factor, x_shift, y_shift)
                 print("Stack registration completed.")
         
     def show_info(self):
