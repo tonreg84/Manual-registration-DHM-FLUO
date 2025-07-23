@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Function to read an image file (.png;.jpg;.jpeg;.bmp;.tif;.tiff; LynceeTec: .bin;.bnr)
 # and transform it to Tkinter photo format, gives also dimensions in pixel
-def path_to_TkPhotoImage(image_path):
+def path_to_TkPhotoImage(image_path, crop = None):
     
     # default output:
     default_image = Image.new("RGB", (300, 300), "grey")
@@ -20,8 +20,8 @@ def path_to_TkPhotoImage(image_path):
         try:
             (phase_map,in_file_header)=binkoala.read_mat_bin(image_path)
             
-            width = str(in_file_header['width'][0])
-            height = str(in_file_header['height'][0])
+            width = in_file_header['width'][0]
+            height = in_file_header['height'][0]
             
             # Normalize the float array to range [0, 1]
             normalized_array = (phase_map - phase_map.min()) / (phase_map.max() - phase_map.min())
@@ -31,6 +31,15 @@ def path_to_TkPhotoImage(image_path):
             cmap_array = cmap(normalized_array)
             # Convert the matplotlib array to a PIL image
             image = Image.fromarray((cmap_array[:, :, :3] * 255).astype(numpy.uint8))
+            
+            # apply crop if needed
+            if crop:
+                # Define the rectangle to crop (left, upper, right, lower)
+                crop_rectangle = (crop[0], crop[1], crop[2], crop[3])  # Example: crop a 250x250 area starting at (50, 50)
+                image = image.crop(crop_rectangle)
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
+            
             # Convert PIL image to Tkinter-compatible format
             photo = ImageTk.PhotoImage(image)
             
@@ -44,11 +53,9 @@ def path_to_TkPhotoImage(image_path):
             nImages = numpy.fromfile(fileID, dtype="i4", count=1)
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
-            width=w[0]
-            w=w[0]
+            width = w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
             height=h[0]
-            h=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
             wave = numpy.fromfile(fileID, dtype="f4", count=1)
             n_1 = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -56,12 +63,12 @@ def path_to_TkPhotoImage(image_path):
             #timestamps = numpy.fromfile(fileID, dtype="i4", count=nImages)
             timestamps = [0] * nImages
             for k in range(0,nImages):
-                x=numpy.fromfile(fileID, dtype="i4", count=1)
+                x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -74,6 +81,15 @@ def path_to_TkPhotoImage(image_path):
             cmap_array = cmap(normalized_array)
             # Convert the matplotlib array to a PIL image
             image = Image.fromarray((cmap_array[:, :, :3] * 255).astype(numpy.uint8))
+            
+            # apply crop if needed
+            if crop:
+                # Define the rectangle to crop (left, upper, right, lower)
+                crop_rectangle = (crop[0], crop[1], crop[2], crop[3])  # Example: crop a 250x250 area starting at (50, 50)
+                image = image.crop(crop_rectangle)
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
+            
             # Convert PIL image to Tkinter-compatible format
             photo = ImageTk.PhotoImage(image)    
             
@@ -84,8 +100,8 @@ def path_to_TkPhotoImage(image_path):
         from tifffile import imread
         try:
             phase_map = imread(image_path, key=0)
-            width = str(len(phase_map[0,:]))
-            height = str(len(phase_map[:,0]))
+            width = len(phase_map[0,:])
+            height = len(phase_map[:,0])
             
             # Normalize the float array to range [0, 1]
             normalized_array = (phase_map - phase_map.min()) / (phase_map.max() - phase_map.min())
@@ -95,6 +111,15 @@ def path_to_TkPhotoImage(image_path):
             cmap_array = cmap(normalized_array)
             # Convert the matplotlib array to a PIL image
             image = Image.fromarray((cmap_array[:, :, :3] * 255).astype(numpy.uint8))
+            
+            # apply crop if needed
+            if crop:
+                # Define the rectangle to crop (left, upper, right, lower)
+                crop_rectangle = (crop[0], crop[1], crop[2], crop[3])  # Example: crop a 250x250 area starting at (50, 50)
+                image = image.crop(crop_rectangle)
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
+            
             # Convert PIL image to Tkinter-compatible format
             photo = ImageTk.PhotoImage(image)
 
@@ -107,11 +132,20 @@ def path_to_TkPhotoImage(image_path):
             height, width = image.shape[:2]
             
             pil_image = Image.fromarray(image)
+            
+            # apply crop if needed
+            if crop:
+                # Define the rectangle to crop (left, upper, right, lower)
+                crop_rectangle = (crop[0], crop[1], crop[2], crop[3])  # Example: crop a 250x250 area starting at (50, 50)
+                image = image.crop(crop_rectangle)
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
+            
             # Convert the PIL Image to an ImageTk PhotoImage
             photo = ImageTk.PhotoImage(image=pil_image)
 
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
 
     return photo, height, width
 
@@ -150,9 +184,9 @@ def path_to_display(image_path, label):
             nImages = numpy.fromfile(fileID, dtype="i4", count=1)
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
-            w=w[0]
+            width=w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
-            h=h[0]
+            height=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
             wave = numpy.fromfile(fileID, dtype="f4", count=1)
             n_1 = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -160,12 +194,12 @@ def path_to_display(image_path, label):
             #timestamps = numpy.fromfile(fileID, dtype="i4", count=nImages)
             timestamps = [0] * nImages
             for k in range(0,nImages):
-                x=numpy.fromfile(fileID, dtype="i4", count=1)
+                x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -223,17 +257,21 @@ def path_to_display(image_path, label):
             label.config(image=photo)
             label.image = photo  # Keep a reference to the image to prevent garbage collection
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
             
 # Function to read an image file (.png;.jpg;.jpeg;.bmp;.tif;.tiff; LynceeTec: .bin;.bnr)
 # and transform it to RGB format (array of dimensions H*W*3)
-def path_to_RGB(image_path):
+def path_to_RGB(image_path, crop = None):
     
     file_name, file_extension = path.splitext(image_path)
+    
     if file_extension == ".bin": 
         import binkoala
         try:
             (phase_map,in_file_header)=binkoala.read_mat_bin(image_path)
+            
+            width = in_file_header['width'][0]
+            height = in_file_header['height'][0]
             
             # Normalize the float array to range [0, 1]
             normalized_array = (phase_map - phase_map.min()) / (phase_map.max() - phase_map.min())
@@ -243,6 +281,13 @@ def path_to_RGB(image_path):
             cmap_array = cmap(normalized_array)
             # extract first 3 planes and rescale:            
             RGB_image = cmap_array[:, :, :3]* 255
+            
+            # apply crop if needed
+            if crop:
+                # Crop the image using NumPy slicing
+                RGB_image = RGB_image[crop[1]:crop[3], crop[0]:crop[2]]
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
             
         except Exception as e:
             print(f"Error loading bin file: {e}") 
@@ -254,9 +299,9 @@ def path_to_RGB(image_path):
             nImages = numpy.fromfile(fileID, dtype="i4", count=1)
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
-            w=w[0]
+            width=w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
-            h=h[0]
+            height=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
             wave = numpy.fromfile(fileID, dtype="f4", count=1)
             n_1 = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -264,12 +309,12 @@ def path_to_RGB(image_path):
             #timestamps = numpy.fromfile(fileID, dtype="i4", count=nImages)
             timestamps = [0] * nImages
             for k in range(0,nImages):
-                x=numpy.fromfile(fileID, dtype="i4", count=1)
+                x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -283,6 +328,13 @@ def path_to_RGB(image_path):
             # extract first 3 planes and rescale:            
             RGB_image = cmap_array[:, :, :3]* 255
             
+            # apply crop if needed
+            if crop:
+                # Crop the image using NumPy slicing
+                RGB_image = RGB_image[crop[1]:crop[3], crop[0]:crop[2]]
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
+            
         except Exception as e:
             print(f"Error loading bnr file: {e}") 
 
@@ -290,6 +342,8 @@ def path_to_RGB(image_path):
         from tifffile import imread
         try:
             phase_map = imread(image_path, key=0)
+            width = len(phase_map[0,:])
+            height = len(phase_map[:,0])
             
             # Normalize the float array to range [0, 1]
             normalized_array = (phase_map - phase_map.min()) / (phase_map.max() - phase_map.min())
@@ -299,6 +353,13 @@ def path_to_RGB(image_path):
             cmap_array = cmap(normalized_array)
             # extract first 3 planes and rescale:            
             RGB_image = cmap_array[:, :, :3]* 255
+            
+            # apply crop if needed
+            if crop:
+                # Crop the image using NumPy slicing
+                RGB_image = RGB_image[crop[1]:crop[3], crop[0]:crop[2]]
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
 
         except Exception as e:
             print(f"Error loading tif / tiff file: {e}") 
@@ -306,8 +367,16 @@ def path_to_RGB(image_path):
     else:
         try:
             RGB_image = cv2.imread(image_path)
+            height, width = RGB_image.shape[:2]
+            
+            # apply crop if needed
+            if crop:
+                # Crop the image using NumPy slicing
+                RGB_image = RGB_image[crop[1]:crop[3], crop[0]:crop[2]]
+                # width = crop[2]-crop[0]
+                # height = crop[3]-crop[1]
             
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
     
-    return RGB_image
+    return RGB_image, height, width

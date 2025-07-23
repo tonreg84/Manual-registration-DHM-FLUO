@@ -6,6 +6,8 @@ from Image_import import path_to_RGB
 import numpy as np
 import cv2
 
+current_rectangle = None
+
 def is_float(string):
     try:
         float(string)
@@ -60,7 +62,7 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
     # Variables to store starting point and rectangle ID
     start_x = None
     start_y = None
-    current_rectangle = None
+
     drawing_mode = False  # Controls whether drawing is active
     x1 = 0
     y1 = 0
@@ -85,7 +87,13 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
         
     def start_draw(event):
         """Start drawing the rectangle (only if drawing mode is active)."""
-        nonlocal drawing_mode, start_x, start_y, current_rectangle
+        nonlocal drawing_mode, start_x, start_y
+        global current_rectangle
+        
+        if current_rectangle:
+            canvas.delete(current_rectangle)
+            current_rectangle = None  # Clear reference
+        
         if drawing_mode:
             start_x = event.x
             start_y = event.y
@@ -93,14 +101,16 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
             
     def draw_rectangle(event):
         """Update the rectangle as the mouse is dragged (only if drawing mode is active)."""
-        nonlocal drawing_mode, start_x, start_y, current_rectangle
+        nonlocal drawing_mode, start_x, start_y
+        global current_rectangle
         if drawing_mode and current_rectangle:
             # Update the rectangle dimensions
            canvas.coords(current_rectangle, start_x, start_y, event.x, event.y)
            
     def end_draw(event):
         """Finalize the rectangle, display its details, and disable drawing mode."""
-        nonlocal drawing_mode, start_x, start_y, current_rectangle, x1,y1,x2,y2
+        nonlocal drawing_mode, start_x, start_y, x1,y1,x2,y2
+        global current_rectangle
         if drawing_mode:
             end_x, end_y = event.x, event.y
 
@@ -117,26 +127,50 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
             print(x1,y1,x2,y2)
 
             # Reset for the next rectangle and disable drawing mode
-            current_rectangle = None
             start_x = None
             start_y = None
+            
+            # drawing_mode = False
+            
+            # # Bind mouse events again for image dragging
+            # canvas.tag_bind(canv_image_id,"<Button-1>", start_drag)
+            # canvas.tag_bind(canv_image_id,"<B1-Motion>", drag_image)
+    
+    def activate_drawing():
+        """First disable dragging of source image, the enable ROI drawing mode."""
+        nonlocal drawing_mode
+        global current_rectangle
+        
+        if drawing_mode:
             drawing_mode = False
+            
+            activate_button.config(text="Activate Drawing Mode\nto crop the reference image")
+            
+            canvas.unbind("<Button-1>")
+            canvas.unbind("<B1-Motion>")
+            canvas.unbind("<ButtonRelease-1>")
             
             # Bind mouse events again for image dragging
             canvas.tag_bind(canv_image_id,"<Button-1>", start_drag)
             canvas.tag_bind(canv_image_id,"<B1-Motion>", drag_image)
+            
+        else:
+            drawing_mode = True
+            
+            if current_rectangle:
+                canvas.delete(current_rectangle)
+                current_rectangle = None  # Clear reference
+            
+            activate_button.config(text="Deactivate Drawing Mode")
+            
+            canvas.tag_unbind(canv_image_id, "<Button-1>")
+            canvas.tag_unbind(canv_image_id, "<B1-Motion>")
     
-    def activate_drawing():
-        """Enable drawing mode."""
-        nonlocal drawing_mode
-        drawing_mode = True
-        
-        # Bind mouse events (initially inactive)
-        canvas.bind("<Button-1>", start_draw)
-        canvas.bind("<B1-Motion>", draw_rectangle)
-        canvas.bind("<ButtonRelease-1>", end_draw)
-    
-        
+            canvas.bind("<Button-1>", start_draw)
+            canvas.bind("<B1-Motion>", draw_rectangle)
+            canvas.bind("<ButtonRelease-1>", end_draw)
+            
+            
     def return_shift():
         # Pass the accumulated shift back to the main GUI
         print("Rough image shift (x,y):", x_offset/scaling_factor*100, y_offset/scaling_factor*100) # apply inverse scaling factor for shift in real scale
@@ -220,16 +254,20 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
     canvas.tag_bind(canv_image_id,"<Button-1>", start_drag)
     canvas.tag_bind(canv_image_id,"<B1-Motion>", drag_image)
     
-    scale_label = tk.Label(window, text= "To scale up/down press up/down arrow key.\n\nScaling by percent:")
+    scale_label = tk.Label(window, text= "To scale up/down press up/down arrow key\n")
     scale_label.grid(row=0, column=1, padx=5, pady=5, sticky="n,w")
+    
+    scale_label2 = tk.Label(window, text= "Scaling by percent:")
+    scale_label2.grid(row=1, column=1, padx=5, pady=5, sticky="n,w")
+    
     scale_entry = tk.Entry(window, width=12)
-    scale_entry.grid(row=1, column=1, padx=5, pady=5, sticky="n,w")
+    scale_entry.grid(row=2, column=1, padx=5, pady=5, sticky="n,w")
     scale_entry.insert(0,"1")
     
     total_scale_label = tk.Label(window, text= "Total scale factor = 1")
     total_scale_label.grid(row=3, column=1, padx=5, pady=5, sticky="n,w")
     
-    activate_button = tk.Button(window, text="Activate Drawing Mode\nto crop the referenceimage", command=activate_drawing)
+    activate_button = tk.Button(window, text="Activate Drawing Mode\nto crop the reference image", width = 25, height = 2, command=activate_drawing)
     activate_button.grid(row=5, column=1, padx=5, pady=5, sticky="n,w")
     
     # Bind keys to functions
@@ -237,7 +275,7 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
     window.bind("<Down>", scale_down) # Press "Down Arrow" to scale down
 
     # Button to stop and return rough shift
-    load_button = tk.Button(window, text="Rough shift, rough scaling, and refrence crop done", command=return_shift)
+    load_button = tk.Button(window, text="Rough shift, rough scaling,\nand refrence crop done",width = 25, height = 2, command=return_shift)
     load_button.grid(row=7, column=1, padx=5, pady=5, sticky="n,w")
     
     if master == None:

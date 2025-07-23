@@ -9,7 +9,7 @@ from Rough import Rough
 
 from Image_import import path_to_display, path_to_TkPhotoImage, path_to_RGB
 
-from stack_registration import Stack_registration
+from Stack_registration import Stack_registration
 
 
 class MainGUI:
