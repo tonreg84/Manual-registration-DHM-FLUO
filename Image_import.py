@@ -53,11 +53,9 @@ def path_to_TkPhotoImage(image_path, crop = None):
             nImages = numpy.fromfile(fileID, dtype="i4", count=1)
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
-            width=w[0]
-            w=w[0]
+            width = w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
             height=h[0]
-            h=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
             wave = numpy.fromfile(fileID, dtype="f4", count=1)
             n_1 = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -68,9 +66,9 @@ def path_to_TkPhotoImage(image_path, crop = None):
                 x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -147,7 +145,7 @@ def path_to_TkPhotoImage(image_path, crop = None):
             photo = ImageTk.PhotoImage(image=pil_image)
 
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
 
     return photo, height, width
 
@@ -186,9 +184,9 @@ def path_to_display(image_path, label):
             nImages = numpy.fromfile(fileID, dtype="i4", count=1)
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
-            w=w[0]
+            width=w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
-            h=h[0]
+            height=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
             wave = numpy.fromfile(fileID, dtype="f4", count=1)
             n_1 = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -199,9 +197,9 @@ def path_to_display(image_path, label):
                 x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -259,13 +257,14 @@ def path_to_display(image_path, label):
             label.config(image=photo)
             label.image = photo  # Keep a reference to the image to prevent garbage collection
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
             
 # Function to read an image file (.png;.jpg;.jpeg;.bmp;.tif;.tiff; LynceeTec: .bin;.bnr)
 # and transform it to RGB format (array of dimensions H*W*3)
 def path_to_RGB(image_path, crop = None):
     
     file_name, file_extension = path.splitext(image_path)
+    
     if file_extension == ".bin": 
         import binkoala
         try:
@@ -301,7 +300,6 @@ def path_to_RGB(image_path, crop = None):
             nImages = nImages[0]
             w = numpy.fromfile(fileID, dtype="i4", count=1)
             width=w[0]
-            w=w[0]
             h = numpy.fromfile(fileID, dtype="i4", count=1)
             height=h[0]
             pz = numpy.fromfile(fileID, dtype="f4", count=1)
@@ -314,9 +312,9 @@ def path_to_RGB(image_path, crop = None):
                 x=numpy.fromfile(fileID, dtype="f4", count=1)
                 timestamps[k] = x[0]
             #get first image from sequence
-            phase_map = numpy.zeros((h,w))
-            for k in range(h):
-                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=w)
+            phase_map = numpy.zeros((height,width))
+            for k in range(height):
+                phase_map[k,:] = numpy.fromfile(fileID, dtype="f4", count=width)
             phase_map=numpy.single(phase_map)
             fileID.close
             
@@ -379,6 +377,6 @@ def path_to_RGB(image_path, crop = None):
                 # height = crop[3]-crop[1]
             
         except Exception as e:
-            print(f"Error loading image: {e}")
+            print(f"Error loading image (non-specified file format): {e}")
     
     return RGB_image, height, width
