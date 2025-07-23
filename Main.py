@@ -273,6 +273,11 @@ class MainGUI:
                 self.rough_shift_y_entry.delete(0, tk.END)
                 self.rough_shift_y_entry.insert(0,str(self.rough_shift_y))
                 
+                self.shift_x_entry.delete(0, tk.END)
+                self.shift_x_entry.insert(0,str(self.fine_shift_x+self.rough_shift_x))
+                self.shift_y_entry.delete(0, tk.END)
+                self.shift_y_entry.insert(0,str(self.fine_shift_y+self.rough_shift_y))
+                
                 self.scal_entry.delete(0, tk.END)
                 self.scal_entry.insert(0, str(self.rough_scaling))
                 
@@ -368,24 +373,32 @@ class MainGUI:
         ref_h = None
         ref_w = None
         if self.ref_path == "":
-            ref_path = ""
-            ref_path = filedialog.askopenfilename(title = "Select a reference image", filetypes=[("Open", "*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.bin;*.bnr")])
-            if ref_path == "":
+            self.load_ref()
+            if self.ref_path == "":
                 print("Stack registration cancelled. No reference image selected.")
             else:
-                abc, ref_h, ref_w = path_to_TkPhotoImage(ref_path)
+                ref_h = self.ref_height
+                ref_w = self.ref_width
         else: 
             ref_h = self.ref_height
             ref_w = self.ref_width
         
         if ref_h:
             stack_path = ""
-            stack_path = filedialog.askopenfilename(title = "Select the first stack file",filetypes=[("Open", "*.tif;*.tiff;*.bin;*.bnr")])
+            stack_path = filedialog.askopenfilename(title = "Select the image stack",filetypes=[("Open", "*.tif;*.tiff;*.bin;*.bnr")])
             
             if stack_path == "":
                 print("Stack registration cancelled. No source file selected.")
             else:
                 print(stack_path)
+                self.image_path = stack_path
+                path_to_display(self.image_path, self.image_label)
+                self.img_tk, self.image_height, self.image_width = path_to_TkPhotoImage(self.image_path)
+                self.img_size_label.config(text=f"Source image size (w*h):   {self.image_width} * {self.image_height}")
+                # initialize
+                self.rough_shift_x = 0
+                self.rough_shift_y = 0
+                self.rough_crop = None
                 
                 factor = float(self.scal_entry.get())
                 x_shift = int(self.shift_x_entry.get())

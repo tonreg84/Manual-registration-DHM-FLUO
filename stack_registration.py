@@ -15,7 +15,7 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
     Hscale[1,1] = scaling_factor
     Hscale[2,2] = 1
     Hscale[0,2] = 0
-    Hscale[1,2] = 0   
+    Hscale[1,2] = 0
     
     # create homography matrix for shifting
     Hshift = np.zeros((3, 3))
@@ -23,7 +23,7 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
     Hshift[1,1] = 1
     Hshift[2,2] = 1
     Hshift[0,2] = x_shift
-    Hshift[1,2] = y_shift    
+    Hshift[1,2] = y_shift
     
     file_name, file_extension = os.path.splitext(stack_path)
     
@@ -31,6 +31,10 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
     if file_extension == ".bin":
         
         binfolder=os.path.dirname(stack_path)
+        
+        # get the list of bin files to process
+        bin_files = []
+        bin_files = sorted([f for f in os.listdir(binfolder) if f.endswith(('.bin'))])
         
         new_folder = binfolder + "/registered"
         
@@ -43,56 +47,46 @@ def Stack_registration(stack_path, ref_width, ref_height, scaling_factor, x_shif
             answ = "yes"
         
         if answ == "yes":
-            
-            file = binfolder + '/00000'+'_phase.bin'
-            
-            if not os.path.isfile(file):
-                messagebox.showinfo('Error', 'File 00000_phase.bin missing.')
-            else:
+                            
+            bincheck = True
+            k=0
+            for file in bin_files:
                 
-                bincheck = True
-                k=0
-                while bincheck == True:
-                    
-                    infile = binfolder+'/'+str(k).rjust(5, '0')+'_phase.bin'
-                    
-                    if os.path.isfile(infile):
-                        
-                        print("Processing:",infile)
-                        #load bin-file #k
-                        (phase_map,in_file_header)=binkoala.read_mat_bin(infile)
-                        w=in_file_header['width'][0]
-                        h=in_file_header['height'][0]
-                        pz=in_file_header['px_size'][0]
-                        hconv=in_file_header['hconv'][0]
-                        
-                        # rescale image
-                        new_height = round(h* scaling_factor)
-                        new_width = round(w* scaling_factor)
-                        new_pixel_size = pz/scaling_factor
-                        new_phase_map = cv2.warpPerspective(phase_map, Hscale, (new_width, new_height))
-                        
-                        # Create the larger image with the specified background value
-                        larger_image = np.full((larger_image_height,larger_image_width), 0.500, dtype=np.float32)
-                        
-                        # shift image
-                        # Determine the placement region in the larger image
-                        start_row = y_shift
-                        start_col = x_shift
-                        end_row = y_shift + new_height
-                        end_col = x_shift + new_width
-                        
-                        # Place the smaller image in the larger one
-                        larger_image[start_row:end_row, start_col:end_col] = new_phase_map
-                        
-                        #save new bin-file #k
-                        outfile=new_folder+'/'+str(k).rjust(5, '0')+'_phase.bin'
-                        binkoala.write_mat_bin(outfile, larger_image, larger_image_width, larger_image_height, new_pixel_size, hconv, unit_code=1)
-                        
-                    else: 
-                        bincheck = False
-                    
-                    k = k+1
+                infile = binfolder+'/'+file
+
+                print("Processing:",infile)
+                #load bin-file #k
+                (phase_map,in_file_header)=binkoala.read_mat_bin(infile)
+                w=in_file_header['width'][0]
+                h=in_file_header['height'][0]
+                pz=in_file_header['px_size'][0]
+                hconv=in_file_header['hconv'][0]
+                
+                # rescale image
+                new_height = round(h* scaling_factor)
+                new_width = round(w* scaling_factor)
+                new_pixel_size = pz/scaling_factor
+                new_phase_map = cv2.warpPerspective(phase_map, Hscale, (new_width, new_height))
+                
+                # Create the larger image with the specified background value
+                larger_image = np.full((larger_image_height,larger_image_width), 0.500, dtype=np.float32)
+                
+                # shift image
+                # Determine the placement region in the larger image
+                start_row = y_shift
+                start_col = x_shift
+                end_row = y_shift + new_height
+                end_col = x_shift + new_width
+                
+                # Place the smaller image in the larger one
+                larger_image[start_row:end_row, start_col:end_col] = new_phase_map
+                
+                #save new bin-file #k
+                outfile=new_folder+'/'+file
+                binkoala.write_mat_bin(outfile, larger_image, larger_image_width, larger_image_height, new_pixel_size, hconv, unit_code=1)
+
+
+#TODO
     
     tif_files = []
     # registration for "tiff files" (every file is a single frame of a DHM recording)

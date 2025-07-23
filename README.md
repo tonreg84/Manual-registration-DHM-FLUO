@@ -33,10 +33,12 @@ Shift-it.py :
 - GUI to find the x and y pixel shift (rigid translation)
 - Can save shifted images ("image_shifted_final.png", "image_shifted_overlay.png")
 
-Load and register a whole image sequence (Button "Load stack and process"):
-- For file-types "LynceeTec BIN" or tif/tiff (every file is a single frame of a DHM recording), or "LynceeTec BNR" (single-file stack)
-- Select the first file of the stack
-- bin/if/tiff : saves the modified bin files in a new folder "registered"
-- bnr : creates a new file with suffix "_registered.bnr" / "_registered.tif"
+Load and register a whole image sequence/stack (Button "Load stack and process"):
+- Works on file-types LynceeTec formats .bin and .bnr or .tif / .tiff 
+- If single-frame files (e.g. LynceeTec format .bin):
+-- Select any file of the sequence.
+-- Programme saves the registered images in a new folder "registered".
+- If .bnr: Creates a new file with suffix "_registered.bnr".
+- If single-file stack .tif / .tiff: Creates a new file with suffix "_registered.tif".
 
 Alternative way to register your sequence: open your sequence with imageJ, use Image-Scale... then Image-Transform-Translate...
