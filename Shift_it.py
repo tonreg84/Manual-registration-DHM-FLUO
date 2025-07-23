@@ -7,65 +7,111 @@ import numpy as np
 from Image_import import path_to_RGB
 from POPUP_rescale import POPUP_rescale
 
-def Shift_it(master, ref_RGB=None, image_RGB=None, scaling_factor=1, pre_shift_x = 0, pre_shift_y = 0):
+def Shift_it(master, ref_path=None, image_path=None, scaling_factor=1, pre_shift_x = 0, pre_shift_y = 0):
     
     global shift_x_accum, shift_y_accum, image_shifted, ref_int, image_int, reference
     
     # Load reference and source images
     if master == None:
-        reference_path = filedialog.askopenfilename(title="Select a reference file")
-        reference = path_to_RGB(reference_path)
+        ref_path = filedialog.askopenfilename(title="Select a reference file")
+        reference, ref_height, ref_width = path_to_RGB(ref_path)
         image_path = filedialog.askopenfilename(title="Select an image file")
-        image = path_to_RGB(image_path)
+        image, image_height, image_width = path_to_RGB(image_path)
     else:
-        reference = ref_RGB
-        image = image_RGB
+        reference, ref_height, ref_width = path_to_RGB(ref_path)
+        image, image_height, image_width = path_to_RGB(image_path)
     
-    # rescale source image?
-    rescale_check, scaling_factor = POPUP_rescale(master, scaling_factor)
-    print("Rescale source image?",rescale_check," ,  Scaling factor:", scaling_factor)
+    # # rescale source image?
+    # rescale_check, scaling_factor = POPUP_rescale(master, scaling_factor)
+    # print("Rescale source image?",rescale_check," ,  Scaling factor:", scaling_factor)
     
-    if rescale_check:
-        H_scaled = np.zeros((3, 3))
+    # if rescale_check:
+    H_scaled = np.zeros((3, 3))
 
-        H_scaled[0,0] = scaling_factor
-        H_scaled[1,1] = scaling_factor
-        H_scaled[2,2] = 1
+    H_scaled[0,0] = scaling_factor
+    H_scaled[1,1] = scaling_factor
+    H_scaled[2,2] = 1
 
-        (image_height, image_width) = image.shape[:2]
-        h_s = round(image_height*scaling_factor)
-        w_s = round(image_width*scaling_factor)
-        image = cv2.warpPerspective(image, H_scaled, (w_s, h_s))
+    image_height = round(image_height*scaling_factor)
+    image_width = round(image_width*scaling_factor)
+    image = cv2.warpPerspective(image, H_scaled, (image_width, image_height))
     
-    # Synchronize images sizes
-    # Get the dimensions of the images
-    ref_height, ref_width = reference.shape[:2]
-    image_height, image_width = image.shape[:2]
+    ### Synchronize images sizes
+    # A) all positive shift
+    if pre_shift_y >= 0 and pre_shift_x >= 0:
+        
+        if ref_height > image_height + pre_shift_y:
+            larger_image_height = ref_height
+        else: larger_image_height = image_height + pre_shift_y
+        
+        if ref_width > image_width + pre_shift_x:
+            larger_image_width = ref_width
+        else: larger_image_width = image_width + pre_shift_x
+        
+        grey_value = 127  # Grey color intensity (0-255)
+        larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        
+        larger_ref[0:ref_height, 0:ref_width] = reference
+        larger_image[pre_shift_y:image_height + pre_shift_y, pre_shift_x:image_width + pre_shift_x] = image
+    # B) all negative shift
+    if pre_shift_y < 0 and pre_shift_x < 0:
+        
+        if image_height > ref_height + abs(pre_shift_y):
+            larger_image_height = image_height
+        else: larger_image_height = ref_height + abs(pre_shift_y)
+        
+        if image_width > ref_width + abs(pre_shift_x):
+            larger_image_width = image_width
+        else: larger_image_width = ref_width + abs(pre_shift_x)
+        
+        grey_value = 127  # Grey color intensity (0-255)
+        larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        
+        larger_ref[abs(pre_shift_y):ref_height + abs(pre_shift_y), abs(pre_shift_x):ref_width + abs(pre_shift_x)] = reference
+        larger_image[0:image_height, 0:image_width] = image
+    # C) negative y shit
+    if pre_shift_y < 0 and pre_shift_x >= 0:
+        
+        if image_height > ref_height + abs(pre_shift_y):
+            larger_image_height = image_height
+        else: larger_image_height = ref_height + abs(pre_shift_y)
     
-    image_height = image_height + pre_shift_y
-    image_width = image_width + pre_shift_x
-    
-    if ref_height > image_height:
-        larger_image_height = ref_height
-    else: larger_image_height = image_height
-    
-    if ref_width > image_width:
-        larger_image_width = ref_width
-    else: larger_image_width = image_width
-    
-    grey_value = 127  # Grey color intensity (0-255)
-    larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
-    larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
-    
-    larger_ref[0:ref_height, 0:ref_width] = reference
-    larger_image[pre_shift_y:image_height, pre_shift_x:image_width] = image
+        if ref_width > image_width + pre_shift_x:
+            larger_image_width = ref_width
+        else: larger_image_width = image_width + pre_shift_x    
+        
+        grey_value = 127  # Grey color intensity (0-255)
+        larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        
+        larger_ref[abs(pre_shift_y):ref_height + abs(pre_shift_y), 0:ref_width] = reference
+        larger_image[0:image_height, pre_shift_x:image_width + pre_shift_x] = image
+    # D) negative x shift
+    if pre_shift_y >= 0 and pre_shift_x < 0:
+        
+        if ref_height > image_height + pre_shift_y:
+            larger_image_height = ref_height
+        else: larger_image_height = image_height + pre_shift_y
+        
+        if image_width > ref_width + abs(pre_shift_x):
+            larger_image_width = image_width
+        else: larger_image_width = ref_width + abs(pre_shift_x)
+        
+        grey_value = 127  # Grey color intensity (0-255)
+        larger_ref = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        larger_image = np.full((larger_image_height, larger_image_width, 3), grey_value, dtype=np.uint8)
+        
+        larger_ref[0:ref_height, abs(pre_shift_x):ref_width + abs(pre_shift_x)] = reference
+        larger_image[pre_shift_y:image_height + pre_shift_y, 0:image_width] = image
     
     w = larger_image_width
     h = larger_image_height
     
     shift_x_accum = 0
     shift_y_accum = 0
-    image_shifted = larger_image
+    image_shifted = larger_image.copy()
     
     ref_int = 1
     image_int = 0.5

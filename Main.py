@@ -63,25 +63,39 @@ class MainGUI:
         
         self.space_label0 = tk.Label(self.right_frame, text= "   ")
         
-        self.scal_label = tk.Label(self.right_frame, text= "I. Get the scaling factor:\nEnter a factor or use the sub GUI")
-        self.scal_label2 = tk.Label(self.right_frame, text= "Scaling factor:")
+        self.scal_label = tk.Label(self.right_frame, text= 'I. Get the scaling factor:\n\ni) Enter scaling factor manually:')
+        self.scal_label.grid(row=0, column=0, padx=5, pady=0, sticky="n")
+        
         self.scal_entry = tk.Entry(self.right_frame, width=12)
+        self.scal_entry.grid(row=1, column=0, padx=5, pady=0, sticky="n")
         self.scal_entry.insert(0,"1")
-        self.scal_button = tk.Button(self.right_frame, text="Open Scaling GUI", command=self.start_scaling_GUI)
+        
+        self.scal_label = tk.Label(self.right_frame, text= 'or\nii) Use "Rough GUI" --->\nor')
+        self.scal_label.grid(row=2, column=0, padx=5, pady=0, sticky="n")
+        
+        self.scal_button = tk.Button(self.right_frame, text="iii) Open Scaling GUI", command=self.start_scaling_GUI)
+        self.scal_button.grid(row=3, column=0, padx=10, pady=0, sticky="n")
+
         
         self.space_label = tk.Label(self.right_frame, text= "   ")
+        self.space_label.grid(row=4, column=0, padx=5, pady=5, sticky="n")
+        
         self.space_label2 = tk.Label(self.right_frame, text= "   ")
         self.space_label3 = tk.Label(self.right_frame, text= "   ")
-        self.space_label4 = tk.Label(self.right_frame, text= "   ")
         
         self.shift_button = tk.Button(self.right_frame, text="Open Shifting GUI", command=self.start_shifting_GUI)
         
         self.shift_label = tk.Label(self.right_frame, text= "II. Get the xy shift:\nEnter manually or use the sub GUI")
         self.shift_label2 = tk.Label(self.right_frame, text= "Image shift (x,y):")
-        self.shift_x_entry = tk.Entry(self.right_frame, width=6)
+        
+        self.sssframe = tk.Frame(self.right_frame)
+        self.shift_x_entry = tk.Entry(self.sssframe, width=6)
         self.shift_x_entry.insert(0,"0")
-        self.shift_y_entry = tk.Entry(self.right_frame, width=6)
+        self.shift_y_entry = tk.Entry(self.sssframe, width=6)
         self.shift_y_entry.insert(0,"0")
+        self.shift_x_entry.grid(row=0, column=0, padx=0, pady=5, sticky="n")
+        self.shift_y_entry.grid(row=0, column=1, padx=0, pady=5, sticky="n")
+        
         
         self.stack_label = tk.Label(self.right_frame, text= "III. Rescale and align a whole stack")
         self.stack_button = tk.Button(self.right_frame, text="Load stack and process", command=self.stack_reg)
@@ -90,57 +104,54 @@ class MainGUI:
         
         self.close_button = tk.Button(self.right_frame, text="EXIT", command=self.close_GUI)
         
-        self.space_label0.grid(row=0, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_label.grid(row=1, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_label2.grid(row=2, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_entry.grid(row=3, column=0, padx=5, pady=5, sticky="n,w")
-        self.scal_button.grid(row=4, column=0, padx=5, pady=5, sticky="n,w")
-        self.space_label.grid(row=5, column=0, padx=5, pady=5, sticky="n,w")
+        self.shift_label.grid(row=5, column=0, padx=5, pady=5, sticky="n")
+        self.shift_button.grid(row=6, column=0, padx=5, pady=5, sticky="n")
+        self.shift_label2.grid(row=7, column=0, padx=5, pady=5, sticky="n")
+        self.sssframe.grid(row=8, column=0, padx=5, pady=5, sticky="n")
+        self.space_label2.grid(row=9, column=0, padx=5, pady=5, sticky="n")
+        self.stack_label.grid(row=10, column=0, padx=5, pady=5, sticky="n")
+        self.stack_button.grid(row=11, column=0, padx=5, pady=5, sticky="n")
+        self.space_label3.grid(row=12, column=0, padx=5, pady=5, sticky="n")
+        self.info_button.grid(row=13, column=0, padx=5, pady=5, sticky="n")
+        self.close_button.grid(row=14, column=0, padx=5, pady=5, sticky="n")
         
-        self.shift_label.grid(row=6, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_button.grid(row=7, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_label2.grid(row=8, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_x_entry.grid(row=9, column=0, padx=5, pady=5, sticky="n,w")
-        self.shift_y_entry.grid(row=9, column=0, padx=60, pady=5, sticky="n,w")
-        self.space_label2.grid(row=10, column=0, padx=5, pady=5, sticky="n,w")
-        self.stack_label.grid(row=11, column=0, padx=5, pady=5, sticky="n,w")
-        self.stack_button.grid(row=12, column=0, padx=5, pady=5, sticky="n,w")
-        self.space_label3.grid(row=13, column=0, padx=5, pady=5, sticky="n,w")
-        self.info_button.grid(row=14, column=0, padx=5, pady=5, sticky="n,w")
-        self.space_label4.grid(row=15, column=0, padx=5, pady=5, sticky="n,w")
-        self.close_button.grid(row=16, column=0, padx=5, pady=5, sticky="nw")
-        
-        self.right_frame.grid(row=0, column=2, padx=5, pady=5, sticky="n,w")
+        self.right_frame.grid(row=0, column=2, padx=5, pady=5, sticky="n")
         
         # rough frame
         self.rough_frame = tk.LabelFrame(root, text="Rough stuff")
-
-        self.rescale_label = tk.Label(self.rough_frame, text= "Rescale images to x% :")
-        self.rescale_label.grid(row=0, column=0, padx=5, pady=5, sticky="n,w")
         
-        self.rough_scale_entry = tk.Entry(self.rough_frame, width=6)
-        self.rough_scale_entry.grid(row=0, column=1, padx=5, pady=5, sticky="n,w")
+        self.rrrframe = tk.Frame(self.rough_frame)
+        self.rescale_label = tk.Label(self.rrrframe, text= "Rescale images to")
+        self.rescale_label.grid(row=0, column=0, padx=0, pady=5, sticky="n")
+        self.rough_scale_entry = tk.Entry(self.rrrframe, width=6)
+        self.rough_scale_entry.grid(row=0, column=1, padx=0, pady=5, sticky="n")
         self.rough_scale_entry.insert(0,"75")
+        self.rescale_label2 = tk.Label(self.rrrframe, text= "%")
+        self.rescale_label2.grid(row=0, column=2, padx=0, pady=5, sticky="n")
+        self.rrrframe.grid(row=0, column=0, padx=5, pady=5, sticky="n")
         
         self.rough_button = tk.Button(self.rough_frame, text="Do a rough alignment", command=self.rough)
-        self.rough_button.grid(row=1, column=0, padx=5, pady=5, sticky="n,w")
+        self.rough_button.grid(row=1, column=0, padx=5, pady=5, sticky="n")
         
         self.rough_shift_label = tk.Label(self.rough_frame, text= "Rough shift (x,y):")
-        self.rough_shift_label.grid(row=2, column=0, padx=5, pady=5, sticky="n,w")
-        self.rough_shift_x_entry = tk.Entry(self.rough_frame, width=6)
-        self.rough_shift_x_entry.grid(row=3, column=0, padx=5, pady=5, sticky="n,w")
+        self.rough_shift_label.grid(row=2, column=0, padx=5, pady=5, sticky="n")
+        
+        self.RRRframe = tk.Frame(self.rough_frame)
+        self.rough_shift_x_entry = tk.Entry(self.RRRframe, width=6)
+        self.rough_shift_x_entry.grid(row=0, column=0, padx=0, pady=5, sticky="n")
         self.rough_shift_x_entry.insert(0,"0")
-        self.rough_shift_y_entry = tk.Entry(self.rough_frame, width=6)
-        self.rough_shift_y_entry.grid(row=3, column=0, padx=50, pady=5, sticky="n,w")
+        self.rough_shift_x_entry.config(state="disabled")
+        self.rough_shift_y_entry = tk.Entry(self.RRRframe, width=6)
+        self.rough_shift_y_entry.grid(row=0, column=1, padx=0, pady=5, sticky="n")
         self.rough_shift_y_entry.insert(0,"0")
+        self.rough_shift_y_entry.config(state="disabled")
+        self.RRRframe.grid(row=3, column=0, padx=5, pady=5, sticky="n")
 
-        self.rough_frame.grid(row=0, column=3, padx=5, pady=5, sticky="n,w")
+        self.rough_frame.grid(row=0, column=3, padx=5, pady=5, sticky="n")
         
         # initialize some variables
         self.ref_tk = None
         self.img_tk = None
-        self.ref_RGB = None
-        self.img_RGB = None
         self.ref_height = None
         self.ref_width = None
         self.image_height = None
@@ -162,7 +173,6 @@ class MainGUI:
             path_to_display(self.ref_path, self.ref_label)
             
             self.ref_tk, self.ref_height, self.ref_width = path_to_TkPhotoImage(self.ref_path)
-            self.ref_RGB, hh, ww = path_to_RGB(self.ref_path, self.rough_crop)
             
             self.ref_size_label.config(text=f"Reference image size (w*h):   {self.ref_width} * {self.ref_height}")
             
@@ -177,7 +187,6 @@ class MainGUI:
             path_to_display(self.image_path, self.image_label)
             
             self.img_tk, self.image_height, self.image_width = path_to_TkPhotoImage(self.image_path)
-            self.image_RGB, hi, wi = path_to_RGB(self.image_path)
             
             self.img_size_label.config(text=f"Source image size (w*h):   {self.image_width} * {self.image_height}")
             
@@ -213,86 +222,7 @@ class MainGUI:
         self.rough_shift_y = 0
         self.rough_crop = None
     
-    def start_scaling_GUI(self):
-        print("Starting Scaling-GUI...")
-        
-        # check if ref and source image have been imported
-        if self.ref_path == "":
-            self.load_ref()
-            
-            if self.ref_path == "":
-                print("Starting Scaling-GUI cancelled. No reference image selected")
-            else:
-                if self.image_path == "":
-                    self.load_image()
-                    if self.image_path == "":
-                        print("Starting Scaling-GUI cancelled. No source image selected")
-        else:
-            if self.image_path == "":
-                self.load_image()
-                if self.image_path == "":
-                    print("Starting Scaling-GUI cancelled. No source image selected")
-
-        if self.ref_path != "" and self.image_path != "":
-            # apply crop on reference if needed
-            if self.rough_crop:
-                # Crop the image using NumPy slicing
-                # RGB_image = RGB_image[self.rough_crop[1]:self.rough_crop[3], self.rough_crop[0]:self.rough_crop[2]]
-                ref_width = self.rough_crop[2]-self.rough_crop[0]
-                ref_height = self.rough_crop[3]-self.rough_crop[1]
-            else:
-                ref_width = self.ref_width
-                ref_height = self.ref_height
-            
-            #Pass data to sub GUI
-            passed_data = self.ref_tk, self.img_tk, ref_height, ref_width, self.image_height, self.image_width
- 
-            # call sub GUI
-            Get_scaling_factor(master=self.root, passed_data=passed_data, callback=self.receive_data_from_second_gui)
-            print("Scaling-GUI closed")
-
-    # Method to receive data back from the second GUI
-    def receive_data_from_second_gui(self, data):
-        self.scal_entry.delete(0, tk.END)
-        self.scal_entry.insert(0, str(data))
-        
-    def start_shifting_GUI(self):
-        print("Starting Shifting-GUI...")
-        # check if ref and source image have been imported
-        if self.ref_path == "":
-            self.load_ref()
-            
-            if self.ref_path == "":
-                print("Starting Shifting-GUI cancelled. No reference image selected")
-            else:
-                if self.image_path == "":
-                    self.load_image()
-                    if self.image_path == "":
-                        print("Starting Shifting-GUI cancelled. No source image selected")
-        else:
-            if self.image_path == "":
-                self.load_image()
-                if self.image_path == "":
-                    print("Starting Shifting-GUI cancelled. No source image selected")
-                        
-        if self.ref_path != "" and self.image_path != "":
-            # apply crop on reference if needed
-            if self.rough_crop:
-                pre_shift_x = self.rough_shift_x - self.rough_crop[0]
-                pre_shift_y = self.rough_shift_y - self.rough_crop[1]
-            else:
-                pre_shift_x = self.rough_shift_x
-                pre_shift_y = self.rough_shift_y
-            
-            self.fine_shift_x, self.fine_shift_y = Shift_it(master = self.root, ref_RGB = self.ref_RGB, image_RGB = self.image_RGB, scaling_factor = self.scal_entry.get(), pre_shift_x = pre_shift_x, pre_shift_y = pre_shift_y)
-            print("Final image shift (x,y):", self.fine_shift_x, self.fine_shift_y)
-            print("Shifting-GUI closed")
-
-            self.shift_x_entry.delete(0, tk.END)
-            self.shift_x_entry.insert(0,str(self.fine_shift_x+self.rough_shift_x))
-            self.shift_y_entry.delete(0, tk.END)
-            self.shift_y_entry.insert(0,str(self.fine_shift_y+self.rough_shift_y))
-            
+    
     def rough(self):
         print("Starting Rough-GUI")
         # call a gui to do a rough overlay, first check some input
@@ -334,6 +264,9 @@ class MainGUI:
                 print("Reference image crop (x, y, w, h):", x1,y1,x2,y2)
                 print("Rough scaling:", self.rough_scaling)
                 print("Rough-GUI closed.")
+                
+                self.rough_shift_x_entry.config(state="normal")
+                self.rough_shift_y_entry.config(state="normal")
             
                 self.rough_shift_x_entry.delete(0, tk.END)
                 self.rough_shift_x_entry.insert(0,str(self.rough_shift_x))
@@ -342,6 +275,93 @@ class MainGUI:
                 
                 self.scal_entry.delete(0, tk.END)
                 self.scal_entry.insert(0, str(self.rough_scaling))
+                
+                self.rough_shift_x_entry.config(state="disabled")
+                self.rough_shift_y_entry.config(state="disabled")
+    
+    
+    # Method to receive data back from the second GUI
+    def receive_data_from_second_gui(self, data):
+        self.scal_entry.delete(0, tk.END)
+        self.scal_entry.insert(0, str(data))
+    
+    
+    def start_scaling_GUI(self):
+        print("Starting Scaling-GUI...")
+
+        # check if ref and source image have been imported
+        if self.ref_path == "":
+            self.load_ref()
+            
+            if self.ref_path == "":
+                print("Starting Scaling-GUI cancelled. No reference image selected")
+            else:
+                if self.image_path == "":
+                    self.load_image()
+                    if self.image_path == "":
+                        print("Starting Scaling-GUI cancelled. No source image selected")
+        else:
+            if self.image_path == "":
+                self.load_image()
+                if self.image_path == "":
+                    print("Starting Scaling-GUI cancelled. No source image selected")
+
+        if self.ref_path != "" and self.image_path != "":
+            # apply crop on reference if needed
+            if self.rough_crop:
+                # Crop the image using NumPy slicing
+                # RGB_image = RGB_image[self.rough_crop[1]:self.rough_crop[3], self.rough_crop[0]:self.rough_crop[2]]
+                ref_width = self.rough_crop[2]-self.rough_crop[0]
+                ref_height = self.rough_crop[3]-self.rough_crop[1]
+            else:
+                ref_width = self.ref_width
+                ref_height = self.ref_height
+            
+            #Pass data to sub GUI
+            passed_data = self.ref_tk, self.img_tk, ref_height, ref_width, self.image_height, self.image_width
+ 
+            # call sub GUI
+            Get_scaling_factor(master=self.root, passed_data=passed_data, callback=self.receive_data_from_second_gui)
+            print("Scaling-GUI closed")
+        
+        
+    def start_shifting_GUI(self):
+        print("Starting Shifting-GUI...")
+        # check if ref and source image have been imported
+        if self.ref_path == "":
+            self.load_ref()
+            
+            if self.ref_path == "":
+                print("Starting Shifting-GUI cancelled. No reference image selected")
+            else:
+                if self.image_path == "":
+                    self.load_image()
+                    if self.image_path == "":
+                        print("Starting Shifting-GUI cancelled. No source image selected")
+        else:
+            if self.image_path == "":
+                self.load_image()
+                if self.image_path == "":
+                    print("Starting Shifting-GUI cancelled. No source image selected")
+                        
+        if self.ref_path != "" and self.image_path != "":
+            # apply crop on reference if needed
+            if self.rough_crop:
+                pre_shift_x = self.rough_shift_x - self.rough_crop[0]
+                pre_shift_y = self.rough_shift_y - self.rough_crop[1]
+            else:
+                pre_shift_x = self.rough_shift_x
+                pre_shift_y = self.rough_shift_y
+            
+            self.fine_shift_x, self.fine_shift_y = Shift_it(master = self.root, ref_path = self.ref_path, image_path = self.image_path, scaling_factor = float(self.scal_entry.get()), pre_shift_x = pre_shift_x, pre_shift_y = pre_shift_y)
+            print("Final image shift (x,y):", self.fine_shift_x, self.fine_shift_y)
+            print("Shifting-GUI closed")
+
+            self.shift_x_entry.delete(0, tk.END)
+            self.shift_x_entry.insert(0,str(self.fine_shift_x+self.rough_shift_x))
+            self.shift_y_entry.delete(0, tk.END)
+            self.shift_y_entry.insert(0,str(self.fine_shift_y+self.rough_shift_y))
+
             
     def stack_reg(self):
         print("Start stack registration:")
@@ -375,7 +395,7 @@ class MainGUI:
                 print("Stack registration completed.")
         
     def show_info(self):
-        with open('_read me.txt') as f:
+        with open('README.md') as f:
             infotext=f.read()
         f.close()
         tk.messagebox.showinfo("Info", infotext)

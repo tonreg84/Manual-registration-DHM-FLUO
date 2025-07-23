@@ -270,6 +270,8 @@ def Rough(master=None, ref_path=None, image_path=None, scaling_factor=75):
     activate_button = tk.Button(window, text="Activate Drawing Mode\nto crop the reference image", width = 25, height = 2, command=activate_drawing)
     activate_button.grid(row=5, column=1, padx=5, pady=5, sticky="n,w")
     
+    tk.Label(window, text= "Attention: The cropping rectangle\nmust contain the whole\nsource image.").grid(row=6, column=1, padx=5, pady=5, sticky="n,w")
+    
     # Bind keys to functions
     window.bind("<Up>", scale_up)   # Press "Up Arrow" to scale up
     window.bind("<Down>", scale_down) # Press "Down Arrow" to scale down

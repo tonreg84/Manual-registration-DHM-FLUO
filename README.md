@@ -18,19 +18,19 @@ Sub-GUIs:
 Rough.py: GUI to find a "rough" shift and scaling (can be sufficient for your needs) and to define a crop for the reference image
 - You can drag the semi-transparent source (DHM) image over the reference for a rough shift.
 - You can rescale the source image by pressing the "up" or "down" key on your keyboard for a rough scaling
-- You can define a crop for the reference (Fluo) image: Click on the button "Activate drawing mode", then draw a rectangle on the screen. The rectangle should contain the whole DHM image. This crop will apply when closing the Rough GUI and opening another 
-Close this window with the button "Rough shift and crop done". This gives the crop and rough shift parameter back to the main window.
-Now you can open the "Shift" window to get a more precise shift. You will see that these windows will use the cropped reference. Or you can directly do a stack alignment.
+- For the case that the reference image is much bigger than the source image (mostly the cas if reference is a fluo image): You can define a cropping rectangle the reference: Click on the button "Activate drawing mode", then draw a rectangle on the screen.
+  Attention: The rectangle must contain the whole source image. This crop will apply when opening the other sub GUIs.
+Close this window with the button "Rough shift and crop done". This gives the scaling and shift parameter back to the main window.
 
 Get_scaling_factor.py :
-- Program to find the scaling factor (alternative ways to find the scaling factor: i) Rough.py, ii) take the ratio of the pixel sizes, iii) find the scaling factor manually with imageJ,...)
+- GUI to find the scaling factor (alternative ways to find the scaling factor: i) Rough.py, ii) take the ratio of the pixel sizes, iii) find the scaling factor manually with imageJ,...)
 - Shows the images in real size, i.e., if the image is 800x800 pixels, it will take 800x800 pixels of the screen to show it. Therfore, you need to crop bigger images before loading them (mind to keep the most interesting ROI).
 - Find landmarks, which are clearly indentifiable in reference and source image. Double click every landmark in both, reference and source image. The order of clicking is important!
 - Try to find landmarks as far from each other as possible and as many as possible.
 - At least 2 landmarks per image are needed.
 
 Shift-it.py :
-- Program to find the x and y pixel shift (rigid translation)
+- GUI to find the x and y pixel shift (rigid translation)
 - Can save shifted images ("image_shifted_final.png", "image_shifted_overlay.png")
 
 Load and register a whole image sequence (Button "Load stack and process"):
