@@ -318,12 +318,14 @@ class MainGUI:
                 # RGB_image = RGB_image[self.rough_crop[1]:self.rough_crop[3], self.rough_crop[0]:self.rough_crop[2]]
                 ref_width = self.rough_crop[2]-self.rough_crop[0]
                 ref_height = self.rough_crop[3]-self.rough_crop[1]
+                ref_tk, _, _ = path_to_TkPhotoImage(self.ref_path, crop = self.rough_crop)
             else:
                 ref_width = self.ref_width
                 ref_height = self.ref_height
+                ref_tk = self.ref_tk
             
             #Pass data to sub GUI
-            passed_data = self.ref_tk, self.img_tk, ref_height, ref_width, self.image_height, self.image_width
+            passed_data = ref_tk, self.img_tk, ref_height, ref_width, self.image_height, self.image_width
  
             # call sub GUI
             Get_scaling_factor(master=self.root, passed_data=passed_data, callback=self.receive_data_from_second_gui)
@@ -350,15 +352,7 @@ class MainGUI:
                     print("Starting Shifting-GUI cancelled. No source image selected")
                         
         if self.ref_path != "" and self.image_path != "":
-            # apply crop on reference if needed
-            if self.rough_crop:
-                pre_shift_x = self.rough_shift_x - self.rough_crop[0]
-                pre_shift_y = self.rough_shift_y - self.rough_crop[1]
-            else:
-                pre_shift_x = self.rough_shift_x
-                pre_shift_y = self.rough_shift_y
-            
-            self.fine_shift_x, self.fine_shift_y = Shift_it(master = self.root, ref_path = self.ref_path, image_path = self.image_path, scaling_factor = float(self.scal_entry.get()), pre_shift_x = pre_shift_x, pre_shift_y = pre_shift_y)
+            self.fine_shift_x, self.fine_shift_y = Shift_it(master = self.root, ref_path = self.ref_path, image_path = self.image_path, scaling_factor = float(self.scal_entry.get()), pre_shift_x = self.rough_shift_x, pre_shift_y = self.rough_shift_y, ref_crop = self.rough_crop)
             print("Final image shift (x,y):", self.fine_shift_x, self.fine_shift_y)
             print("Shifting-GUI closed")
 
@@ -390,7 +384,6 @@ class MainGUI:
             if stack_path == "":
                 print("Stack registration cancelled. No source file selected.")
             else:
-                print(stack_path)
                 self.image_path = stack_path
                 path_to_display(self.image_path, self.image_label)
                 self.img_tk, self.image_height, self.image_width = path_to_TkPhotoImage(self.image_path)
@@ -405,7 +398,7 @@ class MainGUI:
                 y_shift = int(self.shift_y_entry.get())
                                 
                 Stack_registration(self.root, stack_path, ref_w, ref_h, factor, x_shift, y_shift)
-                print("Stack registration completed.")
+                
         
     def show_info(self):
         with open('README.md') as f:

@@ -7,7 +7,7 @@ import numpy as np
 from Image_import import path_to_RGB
 from POPUP_rescale import POPUP_rescale
 
-def Shift_it(master, ref_path=None, image_path=None, scaling_factor=1, pre_shift_x = 0, pre_shift_y = 0):
+def Shift_it(master, ref_path=None, image_path=None, scaling_factor=1, pre_shift_x = 0, pre_shift_y = 0, ref_crop =[0,0,0,0]):
     
     global shift_x_accum, shift_y_accum, image_shifted, ref_int, image_int, reference
     
@@ -15,11 +15,23 @@ def Shift_it(master, ref_path=None, image_path=None, scaling_factor=1, pre_shift
     if master == None:
         ref_path = filedialog.askopenfilename(title="Select a reference file")
         reference, ref_height, ref_width = path_to_RGB(ref_path)
+        ref_crop =[0,0,ref_width,ref_height]
         image_path = filedialog.askopenfilename(title="Select an image file")
         image, image_height, image_width = path_to_RGB(image_path)
     else:
         reference, ref_height, ref_width = path_to_RGB(ref_path)
         image, image_height, image_width = path_to_RGB(image_path)
+        if ref_crop == None:
+            ref_crop =[0,0,ref_width,ref_height]
+    
+    # apply crop on reference
+    crop_rectangle = (ref_crop[0], ref_crop[1], ref_crop[2], ref_crop[3])
+    reference = reference[ref_crop[1]:ref_crop[3],ref_crop[0]:ref_crop[2]]
+    ref_height = ref_crop[3] - ref_crop[1]
+    ref_width = ref_crop[2] - ref_crop[0]
+
+    pre_shift_x = pre_shift_x - ref_crop[0]
+    pre_shift_y = pre_shift_y - ref_crop[1]
     
     # # rescale source image?
     # rescale_check, scaling_factor = POPUP_rescale(master, scaling_factor)
@@ -27,11 +39,9 @@ def Shift_it(master, ref_path=None, image_path=None, scaling_factor=1, pre_shift
     
     # if rescale_check:
     H_scaled = np.zeros((3, 3))
-
     H_scaled[0,0] = scaling_factor
     H_scaled[1,1] = scaling_factor
     H_scaled[2,2] = 1
-
     image_height = round(image_height*scaling_factor)
     image_width = round(image_width*scaling_factor)
     image = cv2.warpPerspective(image, H_scaled, (image_width, image_height))

@@ -51,7 +51,7 @@ def tiffs_or_tiffS(master):
     vsingle=tk.BooleanVar()
     stackbutton = tk.Checkbutton(window, text='It is a tiff stack file.', variable=vstack, command=lambda: check('stack'))
     stackbutton.pack()
-    stackbutton = tk.Checkbutton(window, text='These are single-image tiff files.', variable=vsingle, width=25, height=1, command=lambda: check('single'))
+    stackbutton = tk.Checkbutton(window, text='These are single-frame tiff files.', variable=vsingle, width=25, height=1, command=lambda: check('single'))
     stackbutton.pack()
     stackbutton = tk.Button(window, text='Confirm', width=6, height=1, command=confirm)
     stackbutton.pack()
@@ -70,9 +70,9 @@ def tiffs_or_tiffS(master):
         
     if a==1:
         go_on=True
-        tiff_type='singleframe'
+        tiff_type='stack'
     elif a==2:
         go_on=True
-        tiff_type='stack'
+        tiff_type='singleframe'
     
     return(go_on,tiff_type)
