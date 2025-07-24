@@ -210,7 +210,8 @@ def Stack_registration(root, stack_path, ref_width, ref_height, scaling_factor, 
         #     #timestamps = numpy.fromfile(fileID, dtype="i4", count=nImages)
         #     timestamps = [0] * nImages
         #     for k in range(0,nImages):
-        #         timestamps[k] = np.fromfile(infileID, dtype="f4", count=1)
+        #         TTT = np.fromfile(infileID, dtype="f4", count=1)
+        #         timestamps[k] = TTT[0]
                 
         #     height = round(h* scaling_factor)
         #     width = round(w* scaling_factor)
